@@ -26,11 +26,11 @@ export const sendWelcomeEmail = async (email, name) => {
         const response = await mailtrapClient.send({
             from: sender,
             to: recipient,
-            template_uuid: "dc72f2f3-5bef-4c83-9a27-dc4fd907562b",
-            template_variables: {
-                "name": name,
-                "company_info_name": "Auth Company",
-            }
+            subject: 'Welcome for Successfully Verification',
+            html: `
+                <h2>Welcome, ${name}!</h2>
+                <p>Thanks for choosing Auth App! We are happy to see you on board</>
+            `,
         })
 
         console.log("Welcome email sent successfully", response);

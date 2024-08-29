@@ -29,7 +29,7 @@ export const sendWelcomeEmail = async (email, name) => {
             subject: 'Welcome for Successfully Verification',
             html: `
                 <h2>Welcome, ${name}!</h2>
-                <p>Thanks for choosing Auth App! We are happy to see you on board</>
+                <p>Thanks for choosing Auth App! We are happy to see you on board.</>
             `,
         })
 

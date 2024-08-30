@@ -5,6 +5,7 @@ import { User } from "../models/userModel.js";
 
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
 import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
+import passport from "passport";
 
 export const signup = async (req, res) => {
     const {email, password, name} = req.body;
@@ -193,3 +194,73 @@ export const checkAuth = async (req, res) => {
 		res.status(400).json({ success: false, message: error.message });
 	}
 };
+
+// Initiating Google OAuth2 Authentication
+export const initiateGoogleAuth = (req, res, next) => {
+    passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+};
+
+// Handling Google OAuth2 Callback
+
+export const handleGoogleAuthCallback = (req, res, next) => {
+    passport.authenticate("google", {
+        failureRedirect: "/login",
+        session: false, 
+    }, async (err, user, info) => {
+        if (err || !user) {
+            console.error("Authentication Error:", err || "No user");
+            return res.status(400).json({ success: false, message: "Google authentication failed" });
+        }
+
+        try {
+            // Log the user object to debug what is returned
+            console.log("User Object:", user);
+
+            // Check if the user already exists in the database
+            let existingUser = await User.findOne({ googleId: user.id });
+
+            if (!existingUser) {
+                // Safely access the user's email and avatar
+                const email = user.emails && user.emails[0] ? user.emails[0].value : null;
+                const avatar = user.photos && user.photos[0] ? user.photos[0].value : null;
+
+                // Handle the case where the email is not available
+                if (!email) {
+                    return res.status(400).json({ success: false, message: "No email found in the user profile" });
+                }
+
+                // Create a new user in MongoDB with isVerified set to true
+                existingUser = new User({
+                    googleId: user.id,
+                    name: user.displayName,
+                    email: email,
+                    avatar: avatar,
+                    isVerified: true, 
+                    verificationToken: null,  
+                    verificationTokenExpiresAt: null 
+                });
+
+                await existingUser.save();
+            } else {
+                // User already exists, ensure isVerified is true for Google logins
+                existingUser.isVerified = true;
+                existingUser.verificationToken = null;
+                existingUser.verificationTokenExpiresAt = null;
+
+                await existingUser.save();
+            }
+
+            // Generate token and set it in a cookie
+            generateTokenAndSetCookie(res, existingUser._id);
+
+            // Redirect to the frontend application
+            res.redirect("https://auth-b4ol.onrender.com");
+        } catch (error) {
+            console.error("Error processing user:", error);
+            return res.status(500).json({ success: false, message: "Server error" });
+        }
+    })(req, res, next);
+};
+
+
+

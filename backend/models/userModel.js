@@ -8,11 +8,13 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true
+        required: function() {
+            return !this.googleId; 
+        }
     },
     name: {
         type: String,
-        required: true
+        required: true,
     },
     lastLogin: {
         type: Date,
@@ -22,10 +24,14 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    googleId: {
+        type: String,
+        index: true 
+    },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
     verificationToken: String,
-    verificationTokenExpiresAt: Date,
+    verificationTokenExpiresAt: Date, 
 }, {timestamps: true});
 
 

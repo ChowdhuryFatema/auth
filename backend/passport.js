@@ -6,7 +6,7 @@ passport.use(
 		{
 			clientID: process.env.GOOGLE_Client_ID,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-			callbackURL: "/api/auth/google/callback",
+			callbackURL: "https://auth-b4ol.onrender.com/api/auth/google/callback",
 			scope: ["profile", "email"],
 		},
 		function (accessToken, refreshToken, profile, callback) {

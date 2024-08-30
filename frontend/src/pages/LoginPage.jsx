@@ -19,7 +19,7 @@ const LoginPage = () => {
 
 	const handleGoogleLogin = () => {
 		window.open(
-			`http://localhost:5000/api/auth/google/callback`,
+			`https://auth-b4ol.onrender.com/api/auth/google/callback`,
 		);
 	};
 

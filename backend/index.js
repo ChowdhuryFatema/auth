@@ -7,7 +7,7 @@ import { connectDB } from './db/connectDB.js';
 import authRoutes from './Routes/authRoute.js';
 import path from 'path';
 import session from'express-session';
-import './../passport.js';
+import './passport.js';
 
 const app = express();
 
@@ -33,7 +33,10 @@ const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: [
+        'http://localhost:5173',
+        'https://auth-b4ol.onrender.com',
+    ],
     credentials: true 
 }));
 

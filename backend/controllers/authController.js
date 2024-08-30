@@ -235,9 +235,9 @@ export const handleGoogleAuthCallback = (req, res, next) => {
                     name: user.displayName,
                     email: email,
                     avatar: avatar,
-                    isVerified: true, 
-                    verificationToken: null,  
-                    verificationTokenExpiresAt: null 
+                    isVerified: true, // Set to true for Google logins
+                    verificationToken: null, // No need for a verification token
+                    verificationTokenExpiresAt: null // No need for token expiry
                 });
 
                 await existingUser.save();
@@ -254,6 +254,7 @@ export const handleGoogleAuthCallback = (req, res, next) => {
             generateTokenAndSetCookie(res, existingUser._id);
 
             // Redirect to the frontend application
+            // res.redirect("http://localhost:5173");
             res.redirect("https://auth-b4ol.onrender.com");
         } catch (error) {
             console.error("Error processing user:", error);
